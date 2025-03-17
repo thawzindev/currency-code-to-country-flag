@@ -1,6 +1,6 @@
 {
   "name": "currency-code-to-country-flag",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "React component to display country flags based on currency codes or country codes",
   "main": "dist/index.js",
   "module": "dist/index.es.js",

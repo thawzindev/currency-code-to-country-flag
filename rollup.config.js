@@ -24,7 +24,7 @@ export default {
   plugins: [
     peerDepsExternal(),
     resolve({
-      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.svg'],
     }),
     typescript({
       useTsconfigDeclarationDir: true,
@@ -34,7 +34,6 @@ export default {
     {
       name: 'copy-assets',
       generateBundle() {
-        // Copy SVG files to dist
         const fs = require('fs');
         const path = require('path');
         
@@ -55,6 +54,7 @@ export default {
           });
         }
         
+        // Copy SVG files from src to dist maintaining folder structure
         copyFolderSync('src/assets', 'dist/assets');
       }
     },

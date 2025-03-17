@@ -2,11 +2,7 @@ import React from 'react';
 import { currencyToCountry } from './currencyToCountry';
 import { config, FlagSize } from './config';
 
-export interface CountryFlagProps {
-  /** ISO 4217 currency code (e.g., 'USD', 'EUR', 'JPY') */
-  currency?: string;
-  /** ISO 3166-1 alpha-2 country code (e.g., 'US', 'DE', 'JP') */
-  country?: string;
+type BaseCountryFlagProps = {
   /** Flag size (16, 24, 32, 48, or 64 pixels) */
   size?: FlagSize;
   /** Flag aspect ratio: 'square' (1:1) or 'rectangle' (4:3) */
@@ -20,6 +16,20 @@ export interface CountryFlagProps {
   /** Test ID for testing - internal use */
   'data-testid'?: string;
 }
+
+type CurrencyProp = {
+  /** ISO 4217 currency code (e.g., 'USD', 'EUR', 'JPY') */
+  currency: string;
+  country?: never;
+}
+
+type CountryProp = {
+  /** ISO 3166-1 alpha-2 country code (e.g., 'US', 'DE', 'JP') */
+  country: string;
+  currency?: never;
+}
+
+export type CountryFlagProps = BaseCountryFlagProps & (CurrencyProp | CountryProp);
 
 /**
  * CountryFlag component displays a country flag based on currency code or country code
@@ -38,10 +48,18 @@ export const CountryFlag: React.FC<CountryFlagProps> = ({
   'data-testid': testId = 'flag',
 }) => {
   // Determine the country code from the currency code if not directly provided
-  const countryCode = country?.toLowerCase() || (currency ? currencyToCountry[currency.toUpperCase()]?.toLowerCase() : undefined);
+  let countryCode = undefined;
+  
+  if (country) {
+    // For direct country codes, just validate length
+    countryCode = country.length === 2 ? country.toLowerCase() : undefined;
+  } else if (currency) {
+    // For currency codes, check the mapping
+    countryCode = currencyToCountry[currency.toUpperCase()]?.toLowerCase();
+  }
   
   if (!countryCode) {
-    console.warn(`CountryFlag: No country code found for currency code "${currency}" or country code "${country}"`);
+    console.warn('No country code found');
     return null;
   }
 
@@ -52,25 +70,20 @@ export const CountryFlag: React.FC<CountryFlagProps> = ({
   // Map the user-friendly ratio terms to the folder structure
   const ratioFolder = ratio === 'square' ? '1x1' : '4x3';
   
-  try {
-    // Dynamic import of SVG file
-    const flagSrc = require(`./assets/flags/${ratioFolder}/${countryCode}.svg`).default;
-    
-    return (
-      <img
-        data-testid={testId}
-        src={flagSrc}
-        alt={flagAlt}
-        width={ratio === 'square' ? size : Math.round(Number(size) * 1.33)}
-        height={size}
-        className={`country-flag ${className}`.trim()}
-        style={{ ...style }}
-      />
-    );
-  } catch (error) {
-    console.warn(`CountryFlag: Failed to load flag for country code "${countryCode}"`);
-    return null;
-  }
+  // Use relative path to the assets folder
+  const flagPath = `/node_modules/currency-code-to-country-flag/dist/assets/flags/${ratioFolder}/${countryCode}.svg`;
+  
+  return (
+    <img
+      data-testid={testId}
+      src={flagPath}
+      alt={flagAlt}
+      width={ratio === 'square' ? size : Math.round(Number(size) * 1.33)}
+      height={size}
+      className={`country-flag ${className}`.trim()}
+      style={{ ...style }}
+    />
+  );
 };
 
 export default CountryFlag;

@@ -111,14 +111,6 @@ describe('CountryFlag Component', () => {
     expect(flagElement).toHaveAttribute('alt', 'Custom alt text');
   });
 
-  // Test when both country and currency are provided
-  test('prioritizes country over currency when both are provided', () => {
-    render(<CountryFlag country="gb" currency="USD" />);
-    
-    const flagElement = screen.getByTestId('flag');
-    expect(flagElement).toHaveAttribute('alt', expect.stringContaining('Flag for GB'));
-  });
-
   // Test case insensitivity for country code
   test('handles case-insensitive country codes', () => {
     render(<CountryFlag country="US" />);
@@ -154,6 +146,68 @@ describe('CountryFlag Component', () => {
       const flagElement = screen.getByTestId('flag');
       expect(flagElement).toBeInTheDocument();
       expect(flagElement).toHaveAttribute('alt', expect.stringContaining('Flag for CNY'));
+    });
+  });
+
+  describe('Type constraints and error handling', () => {
+    beforeEach(() => {
+      // Spy on console.warn
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      // Restore console.warn
+      jest.restoreAllMocks();
+    });
+
+    test('returns null and warns when no country or currency is found', () => {
+      const { container } = render(<CountryFlag currency="INVALID" />);
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining('No country code found')
+      );
+      expect(container.firstChild).toBeNull();
+    });
+
+    test('returns null and warns when invalid country code is provided', () => {
+      const { container } = render(<CountryFlag country="INVALID" />);
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining('No country code found')
+      );
+      expect(container.firstChild).toBeNull();
+    });
+
+    test('handles undefined values gracefully', () => {
+      const { container } = render(<CountryFlag country={undefined as any} />);
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining('No country code found')
+      );
+      expect(container.firstChild).toBeNull();
+    });
+
+    test('handles empty string values', () => {
+      const { container } = render(<CountryFlag country="" />);
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining('No country code found')
+      );
+      expect(container.firstChild).toBeNull();
+    });
+
+    // TypeScript compile-time tests (these won't run, but will be checked by TypeScript)
+    // @ts-expect-error - Should error when neither country nor currency is provided
+    render(<CountryFlag />);
+
+    // Remove the invalid test case for both props
+    // Add separate test cases for country and currency priority
+    test('renders correctly with country code', () => {
+      render(<CountryFlag country="gb" />);
+      const flagElement = screen.getByTestId('flag');
+      expect(flagElement).toHaveAttribute('alt', expect.stringContaining('Flag for GB'));
+    });
+
+    test('renders correctly with currency code', () => {
+      render(<CountryFlag currency="GBP" />);
+      const flagElement = screen.getByTestId('flag');
+      expect(flagElement).toHaveAttribute('alt', expect.stringContaining('Flag for GBP'));
     });
   });
 });
