@@ -36,33 +36,6 @@ export default {
       tsconfig: "tsconfig.json",
     }),
     commonjs(),
-    {
-      name: "copy-assets",
-      generateBundle() {
-        const fs = require("fs");
-        const path = require("path");
-
-        function copyFolderSync(from, to) {
-          if (!fs.existsSync(to)) {
-            fs.mkdirSync(to, { recursive: true });
-          }
-
-          fs.readdirSync(from).forEach((element) => {
-            const source = path.join(from, element);
-            const target = path.join(to, element);
-
-            if (fs.lstatSync(source).isDirectory()) {
-              copyFolderSync(source, target);
-            } else {
-              fs.copyFileSync(source, target);
-            }
-          });
-        }
-
-        // Copy SVG files from src to dist maintaining folder structure
-        copyFolderSync("src/assets", "dist/assets");
-      },
-    },
     terser(),
   ],
   external: ["react", "react-dom"],
