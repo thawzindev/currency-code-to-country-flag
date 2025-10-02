@@ -1,51 +1,56 @@
-import typescript from 'rollup-plugin-typescript2';
-import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-import { terser } from 'rollup-plugin-terser';
-import commonjs from '@rollup/plugin-commonjs';
-import resolve from '@rollup/plugin-node-resolve';
-import pkg from './package.json';
+import typescript from "rollup-plugin-typescript2";
+import peerDepsExternal from "rollup-plugin-peer-deps-external";
+import { terser } from "rollup-plugin-terser";
+import commonjs from "@rollup/plugin-commonjs";
+import resolve from "@rollup/plugin-node-resolve";
+import url from "@rollup/plugin-url";
+import pkg from "./package.json";
 
 export default {
-  input: 'src/index.ts',
+  input: "src/index.ts",
   output: [
     {
       file: pkg.main,
-      format: 'cjs',
-      exports: 'named',
+      format: "cjs",
+      exports: "named",
       sourcemap: true,
     },
     {
       file: pkg.module,
-      format: 'es',
-      exports: 'named',
+      format: "es",
+      exports: "named",
       sourcemap: true,
     },
   ],
   plugins: [
     peerDepsExternal(),
     resolve({
-      extensions: ['.js', '.jsx', '.ts', '.tsx', '.svg'],
+      extensions: [".js", ".jsx", ".ts", ".tsx", ".svg"],
+    }),
+    url({
+      include: ["**/*.svg"],
+      limit: Infinity, // Inline all SVGs as base64 data URLs
     }),
     typescript({
       useTsconfigDeclarationDir: true,
-      tsconfig: 'tsconfig.json',
+      tsconfig: "tsconfig.json",
     }),
     commonjs(),
     {
-      name: 'copy-assets',
+      name: "copy-assets",
       generateBundle() {
-        const fs = require('fs');
-        const path = require('path');
-        
+        const fs = require("fs");
+        const path = require("path");
+
         function copyFolderSync(from, to) {
           if (!fs.existsSync(to)) {
             fs.mkdirSync(to, { recursive: true });
           }
-          
-          fs.readdirSync(from).forEach(element => {
+
+          fs.readdirSync(from).forEach((element) => {
             const source = path.join(from, element);
             const target = path.join(to, element);
-            
+
             if (fs.lstatSync(source).isDirectory()) {
               copyFolderSync(source, target);
             } else {
@@ -53,12 +58,12 @@ export default {
             }
           });
         }
-        
+
         // Copy SVG files from src to dist maintaining folder structure
-        copyFolderSync('src/assets', 'dist/assets');
-      }
+        copyFolderSync("src/assets", "dist/assets");
+      },
     },
     terser(),
   ],
-  external: ['react', 'react-dom'],
+  external: ["react", "react-dom"],
 };

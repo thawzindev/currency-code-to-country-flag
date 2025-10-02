@@ -1,6 +1,6 @@
 {
   "name": "currency-code-to-country-flag",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "React component to display country flags based on currency codes or country codes",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
@@ -10,6 +10,8 @@
     "src/assets/flags"
   ],
   "scripts": {
+    "generate:flags": "node scripts/generate-flag-imports.js",
+    "prebuild": "npm run generate:flags",
     "build": "rollup -c",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -28,6 +30,14 @@
     "url": "https://github.com/thawzindev"
   },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thawzindev/currency-code-to-country-flag.git"
+  },
+  "homepage": "https://github.com/thawzindev/currency-code-to-country-flag#readme",
+  "bugs": {
+    "url": "https://github.com/thawzindev/currency-code-to-country-flag/issues"
+  },
   "peerDependencies": {
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0"
@@ -35,6 +45,7 @@
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-url": "^8.0.2",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@types/jest": "^29.5.14",

@@ -1,0 +1,45 @@
+# Source files (dist is included)
+src/
+!src/assets/flags
+
+# Config files
+tsconfig.json
+rollup.config.js
+jest.config.js
+
+# Test files
+**/*.test.ts
+**/*.test.tsx
+setupTests.ts
+__mocks__/
+
+# Build scripts
+scripts/
+
+# Documentation (optional, include if you want)
+FIX_SUMMARY.md
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Misc
+.DS_Store

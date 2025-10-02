@@ -1,14 +1,14 @@
 module.exports = {
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom',
+  preset: "ts-jest",
+  testEnvironment: "jsdom",
   moduleNameMapper: {
-    // Handle SVG imports in tests
-    '\\.svg$': 'identity-obj-proxy',
+    // Handle SVG imports in tests - return a string path
+    "\\.svg$": "<rootDir>/__mocks__/fileMock.js",
   },
-  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
-  testMatch: ['<rootDir>/src/**/*.test.{ts,tsx}'],
+  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
+  testMatch: ["<rootDir>/src/**/*.test.{ts,tsx}"],
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
+    "^.+\\.(ts|tsx)$": "ts-jest",
   },
   coverageThreshold: {
     global: {
